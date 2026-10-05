@@ -1,24 +1,11 @@
+<!-- Locally hardened: removed unused privileged/automatic-routing strings. -->
 <resources>
-    <string name="app_name">BTMicFix</string>
-    <string name="status_idle">Idle — No Bluetooth device routed</string>
-    <string name="status_routing">Routing audio to %s…</string>
-    <string name="status_active">Active — Microphone routed to %s</string>
-    <string name="status_failed">Routing failed: %s</string>
-    <string name="btn_enable_routing">Enable Routing</string>
-    <string name="btn_disable_routing">Disable Routing</string>
-    <string name="btn_pair_device">Pair Earbuds</string>
-    <string name="btn_test_routing">Test Mic Routing</string>
-    <string name="shizuku_not_installed">Shizuku not installed (optional)</string>
-    <string name="shizuku_not_running">Shizuku not running</string>
-    <string name="shizuku_permission_needed">Shizuku permission needed</string>
-    <string name="shizuku_ready">Shizuku ready</string>
-    <string name="no_bt_device">No Bluetooth audio device connected</string>
-    <string name="setup_title">Setup</string>
-    <string name="setup_step_bluetooth">Grant Bluetooth Permission</string>
-    <string name="setup_step_shizuku">Connect Shizuku (Optional)</string>
-    <string name="setup_step_pair">Pair Your Earbuds</string>
-    <string name="setup_step_test">Test Audio Routing</string>
-    <string name="notification_channel_name">Audio Routing</string>
-    <string name="notification_channel_desc">Shows when Bluetooth mic routing is active</string>
-    <string name="notification_routing_active">Mic routed to %s</string>
+    <string name="app_name">BTMicFix Local</string>
+    <string name="instructions">Connect your headset in Android Bluetooth settings. Tap its route button below, then open ChatGPT and test with the phone several metres away.\n\nAndroid and ChatGPT can override this request. Compare the headset microphone with routing on and off. Stop routing after testing; headset call mode can reduce playback quality.</string>
+    <string name="grant_permissions">Grant Bluetooth / notification permissions</string>
+    <string name="refresh">Refresh devices and route status</string>
+    <string name="stop">Stop routing</string>
+    <string name="nearby_permission">Grant Nearby devices permission to select a headset.</string>
+    <string name="route_to">Route to %1$s</string>
+    <string name="no_headset">No SCO/HFP or BLE headset communication device is available. Connect a headset that supports calls, then refresh.</string>
 </resources>

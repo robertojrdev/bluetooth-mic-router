@@ -1,105 +1,46 @@
-# BTMicFix
+# BTMicFix Local (hardened test build)
 
-**Fix Bluetooth earbuds microphone routing for AI voice apps on Android.**
+Locally modified from Endda/BTMicFix commit `d38e6ccfb05d83ede27d99c68a4d2506073b9bd7`.
+Upstream copyright/license remain in LICENSE. This branch replaces the Kotlin/Compose
+application with a minimal Android-platform Java implementation of the same public
+communication-routing API. Shizuku, shell execution, companion association, automatic
+routing, stored preferences, and all third-party runtime dependencies are removed.
 
-AI voice apps like ChatGPT, Claude, and Gemini often fail to switch your Bluetooth earbuds from music mode (A2DP) to hands-free mode (SCO/HFP), causing them to use your phone's built-in microphone instead of your earbuds' mic. BTMicFix forces this switch automatically.
+## Use
 
-## How It Works
+1. Connect a call-capable Bluetooth headset in Android settings.
+2. Open BTMicFix Local and grant Nearby devices and notification permissions.
+3. Tap the headset route button; check the actual system communication device shown.
+4. Open ChatGPT and test the microphone with the phone several metres away.
+5. Stop routing in the app or its notification, then compare.
 
-BTMicFix uses Android's `setCommunicationDevice()` API (Android 12+) to force the system to route communication audio through your Bluetooth earbuds. This triggers the A2DP → SCO/HFP profile switch that AI apps fail to perform on their own.
+A successful setCommunicationDevice request does not prove that another application
+records from that microphone. Android or another audio-mode owner can override the
+route. The application never records or plays audio to keep a route alive. Samsung /
+ChatGPT compatibility must be tested on the actual phone. SCO/HFP can reduce media
+quality and use additional headset battery while enabled.
 
-### Three Layers
+Routing is manual. The private foreground service remains running while requested,
+uses callbacks rather than polling, stops on disconnect/Stop, and does not restart
+at boot or after process death. Samsung may still stop it; no battery exemption or
+privileged access is requested. Opening the exported launcher consumes no intent
+extras or data and cannot enable a route without a button tap.
 
-| Layer | Purpose | Requires |
-|---|---|---|
-| **Audio Routing** (primary) | Forces BT mic via `setCommunicationDevice()` | Nothing — public API |
-| **Background Service** | Auto-activates when earbuds connect via Companion Device Manager | One-time pairing in app |
-| **Shizuku Fallback** (optional) | Privileged shell commands for stubborn devices | [Shizuku](https://shizuku.rikka.app/) installed |
+Package: `com.btmicfix.local` (separate from upstream). Android 12+.
+Permissions: BLUETOOTH_CONNECT, MODIFY_AUDIO_SETTINGS, FOREGROUND_SERVICE,
+FOREGROUND_SERVICE_CONNECTED_DEVICE, POST_NOTIFICATIONS.
+No INTERNET or RECORD_AUDIO permission, no root/ADB/Shizuku requirement.
 
-## Requirements
+## Build
 
-- Android 12+ (API 31+)
-- Bluetooth earbuds paired with your device
-- No root required
+Use JDK 17 and Android SDK 35. Set the SDK path in untracked local.properties.
+Gradle 8.9 is pinned with its official distribution SHA-256; the wrapper JAR matches
+Gradle's official checksum. Build plugin: com.android.application 8.7.3.
 
-## Building
-
-```bash
-# Clone the repo
-git clone https://github.com/Endda/btmicfix.git
-cd btmicfix
-
-# Build the debug APK
-./gradlew assembleDebug
-
-# Install on connected device
-adb install -r app/build/outputs/apk/debug/app-debug.apk
+```sh
+./gradlew clean assembleDebug lint
 ```
 
-## Usage
-
-1. **Install** the APK on your Android device
-2. **Grant Bluetooth permission** when prompted
-3. **Pair your earbuds** in the Setup wizard (for automatic background mode)
-4. **Tap "Enable Routing"** on the home screen
-5. **Open your AI app** — your earbuds' microphone should now work
-
-For automatic background mode, complete the pairing step. BTMicFix will then activate whenever your earbuds connect, even without opening the app.
-
-## Shizuku (Optional)
-
-Some devices or Android versions may not respond to the standard `setCommunicationDevice()` API. For these cases, BTMicFix can optionally use [Shizuku](https://shizuku.rikka.app/) to execute privileged audio routing commands. This is **not required** for most users.
-
-## Project Structure
-
-```
-app/src/main/java/com/btmicfix/
-├── BTMicFixApp.kt              # Application class
-├── MainActivity.kt             # Single activity entry point
-├── audio/
-│   ├── AudioRoutingManager.kt  # Core routing logic (setCommunicationDevice)
-│   └── BluetoothStateReceiver.kt # BT connect/disconnect listener
-├── companion/
-│   ├── DeviceCompanionManager.kt # CDM association management
-│   └── BTCompanionService.kt    # Background auto-routing service
-├── shizuku/
-│   ├── ShizukuManager.kt       # Shizuku lifecycle & permissions
-│   └── PrivilegedServiceImpl.kt # Privileged command execution
-├── ui/
-│   ├── components/             # Reusable Compose components
-│   ├── screens/                # HomeScreen, SetupScreen
-│   └── theme/                  # Material 3 dark theme
-└── util/
-    ├── Preferences.kt          # SharedPreferences wrapper
-    └── Logger.kt               # Centralized logging
-```
-
-## Tech Stack
-
-- **Language:** Kotlin
-- **UI:** Jetpack Compose + Material 3
-- **Audio:** AudioManager (API 31+)
-- **Background:** CompanionDeviceManager + CompanionDeviceService
-- **Optional:** Shizuku API 13.1.5
-
-## Contributing
-
-Contributions are welcome! Please open an issue first to discuss what you'd like to change.
-
-## License
-
-```
-Copyright 2026 BTMicFix Contributors
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-```
+Debug output: app/build/outputs/apk/debug/app-debug.apk. Signing uses the normal local
+Android debug key, never a repository key. The debug artifact is intended for personal
+testing; USB debugging permits debugging it and is not a runtime requirement.
