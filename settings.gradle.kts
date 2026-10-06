@@ -20,5 +20,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "BTMicFix"
+rootProject.name = "BluetoothMicRouter"
 include(":app")

@@ -15,7 +15,7 @@ final class RoutingSettings {
     }
 
     int minutes() { return SessionDeadline.validMinutes(preferences.getInt("minutes", 5)); }
-    boolean automatic() { return preferences.getBoolean("automatic", false); }
+    boolean automatic() { return preferences.getBoolean("automatic", true); }
     void automatic(boolean value) { preferences.edit().putBoolean("automatic", value).apply(); }
     void minutes(int value) {
         preferences.edit().putInt("minutes", SessionDeadline.validMinutes(value)).apply();

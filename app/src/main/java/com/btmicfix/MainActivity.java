@@ -1,6 +1,6 @@
 package com.btmicfix;
 
-// Locally hardened replacement: launcher input is ignored; routing requires a button tap.
+// Modified from BTMicFix: public-API routing UI; no external routing extras are accepted.
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -42,6 +42,7 @@ public final class MainActivity extends Activity {
     private Button extend;
     private Button automatic;
     private String error;
+    private boolean automaticStartupAttempted;
     private final Runnable serviceListener = this::refresh;
     private final Handler uiHandler = new Handler(Looper.getMainLooper());
     private final Runnable tick = new Runnable() {
@@ -59,6 +60,7 @@ public final class MainActivity extends Activity {
         @Override public void onServiceConnected(ComponentName name, IBinder binder) {
             service = ((RoutingService.LocalBinder) binder).service();
             service.addListener(serviceListener);
+            startDefaultAutomatic();
             refresh();
         }
         @Override public void onServiceDisconnected(ComponentName name) {
@@ -86,8 +88,15 @@ public final class MainActivity extends Activity {
         });
         TextView title = new TextView(this);
         title.setText(R.string.app_name);
-        title.setTextSize(26);
+        title.setTextSize(30);
+        title.setTypeface(null, android.graphics.Typeface.BOLD);
         content.addView(title);
+        TextView tagline = new TextView(this);
+        tagline.setText(R.string.tagline);
+        tagline.setTextSize(18);
+        tagline.setTextColor(0xFF65E0C7);
+        tagline.setPadding(0, 8, 0, 0);
+        content.addView(tagline);
         TextView instructions = new TextView(this);
         instructions.setText(R.string.instructions);
         instructions.setPadding(0, padding, 0, padding);
@@ -100,13 +109,25 @@ public final class MainActivity extends Activity {
         tile.setText(R.string.add_tile);
         tile.setOnClickListener(view -> addTile());
         content.addView(tile);
+        Button notificationSettings = new Button(this);
+        notificationSettings.setText(R.string.notification_settings);
+        notificationSettings.setOnClickListener(view -> showNotificationSettings());
+        content.addView(notificationSettings);
         permissions = new Button(this);
         permissions.setText(R.string.grant_permissions);
         permissions.setOnClickListener(view -> grantPermissions());
         content.addView(permissions);
         status = new TextView(this);
         status.setTextIsSelectable(true);
-        status.setPadding(0, padding, 0, padding);
+        status.setPadding(padding, padding, padding, padding);
+        android.graphics.drawable.GradientDrawable card = new android.graphics.drawable.GradientDrawable();
+        card.setColor(0xFF192B36);
+        card.setCornerRadius(16 * getResources().getDisplayMetrics().density);
+        status.setBackground(card);
+        LinearLayout.LayoutParams cardLayout = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        cardLayout.setMargins(0, padding, 0, padding);
+        status.setLayoutParams(cardLayout);
         content.addView(status);
         devices = new LinearLayout(this);
         devices.setOrientation(LinearLayout.VERTICAL);
@@ -132,13 +153,25 @@ public final class MainActivity extends Activity {
             refresh();
         });
         content.addView(stop);
+        TextView privacy = new TextView(this);
+        privacy.setText(R.string.privacy_hint);
+        privacy.setPadding(0, padding, 0, padding);
+        content.addView(privacy);
+        Button about = new Button(this);
+        about.setText(R.string.about);
+        about.setOnClickListener(view -> showAbout());
+        content.addView(about);
+        for (int i = 0; i < content.getChildCount(); i++) {
+            if (content.getChildAt(i) instanceof Button) styleButton((Button) content.getChildAt(i));
+        }
         setContentView(scroll);
         if (TileService.ACTION_QS_TILE_PREFERENCES.equals(getIntent().getAction())) showSettings();
     }
 
     @Override protected void onStart() {
         super.onStart();
-        // Binding alone never routes audio or starts a foreground notification.
+        automaticStartupAttempted = false;
+        // Binding itself is passive; the visible activity enables the saved automatic default once.
         bound = bindService(new Intent(this, RoutingService.class), connection, BIND_AUTO_CREATE);
         audio.registerAudioDeviceCallback(deviceListener, new Handler(Looper.getMainLooper()));
         audio.addOnCommunicationDeviceChangedListener(getMainExecutor(), routeListener);
@@ -158,14 +191,13 @@ public final class MainActivity extends Activity {
     }
 
     private void grantPermissions() {
-        if (Build.VERSION.SDK_INT >= 33) {
-            requestPermissions(new String[]{Manifest.permission.BLUETOOTH_CONNECT,
-                    Manifest.permission.POST_NOTIFICATIONS}, 1);
-        } else requestPermissions(new String[]{Manifest.permission.BLUETOOTH_CONNECT}, 1);
+        // Notification permission is optional: denying it must never stop automatic routing.
+        requestPermissions(new String[]{Manifest.permission.BLUETOOTH_CONNECT}, 1);
     }
 
     @Override public void onRequestPermissionsResult(int requestCode, String[] names, int[] grants) {
         super.onRequestPermissionsResult(requestCode, names, grants);
+        startDefaultAutomatic();
         refresh();
     }
 
@@ -173,9 +205,7 @@ public final class MainActivity extends Activity {
         if (status == null) return;
         boolean allowed = checkSelfPermission(Manifest.permission.BLUETOOTH_CONNECT)
                 == PackageManager.PERMISSION_GRANTED;
-        boolean notified = Build.VERSION.SDK_INT < 33 || checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS)
-                == PackageManager.PERMISSION_GRANTED;
-        permissions.setVisibility(allowed && notified ? View.GONE : View.VISIBLE);
+        permissions.setVisibility(allowed ? View.GONE : View.VISIBLE);
         updateStatus();
         stop.setEnabled(service != null && service.enabled());
         extend.setVisibility(service != null && service.timed() ? View.VISIBLE : View.GONE);
@@ -192,6 +222,7 @@ public final class MainActivity extends Activity {
             if (!RoutingService.isHeadset(device)) continue;
             Button button = new Button(this);
             button.setText(getString(R.string.route_to, RoutingService.describe(device)));
+            styleButton(button);
             button.setOnClickListener(view -> {
                 error = null;
                 try {
@@ -230,6 +261,53 @@ public final class MainActivity extends Activity {
             error = "Android could not enable automatic mode. Try manual routing.";
             refresh();
         }
+    }
+
+    private void startDefaultAutomatic() {
+        if (automaticStartupAttempted || service == null
+                || checkSelfPermission(Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) return;
+        automaticStartupAttempted = true;
+        if (new RoutingSettings(this).automatic() && !service.enabled()) enableAutomatic();
+    }
+
+    private void showNotificationSettings() {
+        new AlertDialog.Builder(this).setTitle("Background notification")
+                .setMessage("Turn off this app's notifications on the next screen to hide the persistent notification. "
+                        + "Automatic routing can keep running. Android still lists the app under active apps. "
+                        + "Use the Headset mic tile or this app to stop routing.\n\n"
+                        + "New installations do not ask for notification permission. You can enable notifications here if you want the Stop and timer controls.")
+                .setNegativeButton("Cancel", null)
+                .setPositiveButton("Open notification settings", (dialog, which) ->
+                        startActivity(new Intent(android.provider.Settings.ACTION_APP_NOTIFICATION_SETTINGS)
+                                .putExtra(android.provider.Settings.EXTRA_APP_PACKAGE, getPackageName())))
+                .show();
+    }
+
+    private void showAbout() {
+        String license;
+        try (java.io.InputStream file = getAssets().open("LICENSE")) {
+            java.io.ByteArrayOutputStream bytes = new java.io.ByteArrayOutputStream();
+            byte[] buffer = new byte[4096];
+            int count;
+            while ((count = file.read(buffer)) != -1) bytes.write(buffer, 0, count);
+            license = bytes.toString(java.nio.charset.StandardCharsets.UTF_8.name());
+        } catch (java.io.IOException failure) {
+            license = "Apache License 2.0. Full license is included with the source distribution.";
+        }
+        TextView text = new TextView(this);
+        text.setText(getString(R.string.about_text, license));
+        text.setTextIsSelectable(true);
+        int padding = (int) (20 * getResources().getDisplayMetrics().density);
+        text.setPadding(padding, padding, padding, padding);
+        ScrollView scroll = new ScrollView(this);
+        scroll.addView(text);
+        new AlertDialog.Builder(this).setTitle("About Bluetooth Mic Router")
+                .setView(scroll).setPositiveButton("Close", null).show();
+    }
+
+    private void styleButton(Button button) {
+        button.setAllCaps(false);
+        button.setMinHeight((int) (52 * getResources().getDisplayMetrics().density));
     }
 
     private void addTile() {

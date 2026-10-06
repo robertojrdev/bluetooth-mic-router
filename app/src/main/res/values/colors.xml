@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Locally modified: removed unused foreground color. -->
 <resources>
-    <color name="ic_launcher_background">#1A1A2E</color>
+    <color name="ic_launcher_background">#123B44</color>
 </resources>

@@ -106,8 +106,11 @@ public final class RoutingService extends Service {
         audio = getSystemService(AudioManager.class);
         alarms = getSystemService(AlarmManager.class);
         notifications = getSystemService(NotificationManager.class);
-        notifications.createNotificationChannel(new NotificationChannel(
-                CHANNEL, "Manual Bluetooth routing", NotificationManager.IMPORTANCE_LOW));
+        NotificationChannel channel = new NotificationChannel(
+                CHANNEL, "Bluetooth microphone routing", NotificationManager.IMPORTANCE_LOW);
+        channel.setDescription("Background routing and automatic mode. You can hide this notification in Android settings.");
+        channel.setShowBadge(false);
+        notifications.createNotificationChannel(channel);
     }
 
     @Override public IBinder onBind(Intent intent) { return binder; }
@@ -460,7 +463,7 @@ public final class RoutingService extends Service {
         PendingIntent stop = PendingIntent.getService(this, 1,
                 new Intent(this, RoutingService.class).setAction(STOP), PendingIntent.FLAG_IMMUTABLE);
         Notification.Builder builder = new Notification.Builder(this, CHANNEL)
-                .setSmallIcon(android.R.drawable.stat_sys_data_bluetooth)
+                .setSmallIcon(R.drawable.ic_headset_tile)
                 .setContentTitle(getString(R.string.app_name))
                 .setContentText(text)
                 .setStyle(new Notification.BigTextStyle().bigText(text))

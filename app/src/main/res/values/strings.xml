@@ -1,19 +1,25 @@
-<!-- Locally hardened: removed unused privileged/automatic-routing strings. -->
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Modified from BTMicFix: Bluetooth Mic Router branding and public-API controls. -->
 <resources>
-    <string name="app_name">BTMicFix Keepalive</string>
+    <string name="app_name">Bluetooth Mic Router</string>
     <string name="tile_name">Headset mic</string>
-    <string name="settings">Settings</string>
+    <string name="tagline">Your headset. Your microphone.</string>
+    <string name="settings">Routing settings</string>
+    <string name="notification_settings">Hide or show background notification</string>
+    <string name="about_text">Bluetooth Mic Router 1.0.0\n\nOpen source, maintained by Roberto Jr Dev. Based on BTMicFix by Doug Lynch (Endda).\nSource: https://github.com/robertojrdev/bluetooth-mic-router\n\nNo internet access, microphone recording, analytics, root or Shizuku.\n\n%1$s</string>
+    <string name="about">About and open-source license</string>
     <string name="add_tile">Add Quick Settings tile</string>
     <string name="enable_automatic">Enable automatic mode</string>
     <string name="extend_session">Add 5 minutes to current session</string>
     <string name="duration_setting">Auto-stop / maximum recording session</string>
     <string name="headset_setting">Headset for tile and automatic mode</string>
-    <string name="automatic_setting">Automatic when recording starts (experimental)</string>
-    <string name="settings_help">Automatic mode watches recording status, never audio. It may react to any microphone app, including dictation or camera recording. Choose one headset for it. Routing stops 5 seconds after recording ends, or at the session limit. A timed-out recording must stop before another automatic session starts.\n\nAutomatic mode keeps a background notification while enabled. Stop or the tile disables it; it does not restart after reboot.\n\nDuration and headset changes apply to the next session. Reapply keeps the original deadline; Add 5 minutes extends it.</string>
-    <string name="instructions">Connect your headset, then tap its route button or use the Headset mic Quick Settings tile. The default session stops after 5 minutes. Settings lets you choose another duration and your preferred headset. Long press the tile for Settings.\n\nOptional automatic mode reacts to microphone recording activity. It needs a background notification and is experimental: Android or the recording app can still override routing.\n\nWhile routing, silent playback keeps the headset call path active. This never records audio, but uses battery and can reduce media quality. The notification offers Stop, Add 5 minutes and Reapply headset.</string>
-    <string name="grant_permissions">Grant Bluetooth / notification permissions</string>
+    <string name="automatic_setting">Automatic when recording starts</string>
+    <string name="settings_help">Automatic mode is enabled by default when you open the app with Bluetooth permission. It watches recording status, never audio. It may react to any microphone app, including dictation or camera recording. Choose one headset for it. Routing stops 5 seconds after recording ends, or at the session limit. A timed-out recording must stop before another automatic session starts.\n\nStop or the tile disables it until you enable it again or reopen the app. It does not restart after reboot or if Android stops it.\n\nDuration and headset changes apply to the next session. Reapply keeps the original deadline; Add 5 minutes extends it.</string>
+    <string name="instructions">Connect a headset that supports calls and grant Nearby devices permission. Automatic mode starts when you open the app, then selects your headset when a microphone app starts recording.\n\nSessions stop after 5 minutes by default. Change the timer or headset in Routing settings. Use the Headset mic tile to turn routing on or off.</string>
+    <string name="privacy_hint">No audio recording, internet access or analytics. Silent playback keeps the headset call path active while routing; this uses battery and can reduce media quality. Android or another app can still change the route.</string>
+    <string name="grant_permissions">Grant Nearby devices permission</string>
     <string name="refresh">Refresh devices and route status</string>
-    <string name="stop">Stop routing</string>
+    <string name="stop">Stop routing and automatic mode</string>
     <string name="nearby_permission">Grant Nearby devices permission to select a headset.</string>
     <string name="route_to">Route to %1$s</string>
     <string name="no_headset">No SCO/HFP or BLE headset communication device is available. Connect a headset that supports calls, then refresh.</string>

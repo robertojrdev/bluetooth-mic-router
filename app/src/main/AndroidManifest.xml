@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Locally hardened: manual routing only, no Shizuku/CDM/boot receivers. -->
+<!-- Locally hardened: manual and recording-state routing; no Shizuku/CDM/boot receivers. -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />

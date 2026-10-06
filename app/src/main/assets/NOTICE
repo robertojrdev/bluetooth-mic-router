@@ -1,0 +1,13 @@
+Bluetooth Mic Router
+Copyright 2026 Roberto Jr Dev
+
+This application is derived from BTMicFix by Doug Lynch (Endda).
+Upstream: https://github.com/Endda/BTMicFix
+Audited upstream commit: d38e6ccfb05d83ede27d99c68a4d2506073b9bd7
+Original copyright: Copyright 2026 Doug Lynch
+License: Apache License, Version 2.0 (see LICENSE).
+
+Modifications include removal of Shizuku and shell execution, a platform-Java UI,
+silent playback to retain communication routing, timed sessions, a Quick Settings
+tile, recording-status automation, and Bluetooth Mic Router branding.
+The current release does not contain the original privileged implementation.

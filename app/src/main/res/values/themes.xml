@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="Theme.BTMicFix" parent="android:Theme.Material.NoActionBar">
-        <item name="android:colorBackground">#FF0F0F14</item>
-        <item name="android:statusBarColor">#FF0F0F14</item>
-        <item name="android:navigationBarColor">#FF0F0F14</item>
+        <item name="android:colorBackground">#FF0D1720</item>
+        <item name="android:statusBarColor">#FF0D1720</item>
+        <item name="android:navigationBarColor">#FF0D1720</item>
         <item name="android:windowLightStatusBar">false</item>
+        <item name="android:colorAccent">#65E0C7</item>
+        <item name="android:fontFamily">sans</item>
     </style>
 </resources>
