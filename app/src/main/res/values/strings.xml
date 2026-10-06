@@ -1,7 +1,16 @@
 <!-- Locally hardened: removed unused privileged/automatic-routing strings. -->
 <resources>
     <string name="app_name">BTMicFix Keepalive</string>
-    <string name="instructions">Connect your headset in Android Bluetooth settings. Tap its route button below, then open ChatGPT and test with the phone several metres away.\n\nWhile enabled, this version loops silent communication playback to keep the route request active. It never records audio. This uses phone and headset battery and can reduce media quality.\n\nIf ChatGPT changes the route, try Reapply headset in the notification during your voice session. Android and ChatGPT can still override this request. Stop routing after testing.</string>
+    <string name="tile_name">Headset mic</string>
+    <string name="settings">Settings</string>
+    <string name="add_tile">Add Quick Settings tile</string>
+    <string name="enable_automatic">Enable automatic mode</string>
+    <string name="extend_session">Add 5 minutes to current session</string>
+    <string name="duration_setting">Auto-stop / maximum recording session</string>
+    <string name="headset_setting">Headset for tile and automatic mode</string>
+    <string name="automatic_setting">Automatic when recording starts (experimental)</string>
+    <string name="settings_help">Automatic mode watches recording status, never audio. It may react to any microphone app, including dictation or camera recording. Choose one headset for it. Routing stops 5 seconds after recording ends, or at the session limit. A timed-out recording must stop before another automatic session starts.\n\nAutomatic mode keeps a background notification while enabled. Stop or the tile disables it; it does not restart after reboot.\n\nDuration and headset changes apply to the next session. Reapply keeps the original deadline; Add 5 minutes extends it.</string>
+    <string name="instructions">Connect your headset, then tap its route button or use the Headset mic Quick Settings tile. The default session stops after 5 minutes. Settings lets you choose another duration and your preferred headset. Long press the tile for Settings.\n\nOptional automatic mode reacts to microphone recording activity. It needs a background notification and is experimental: Android or the recording app can still override routing.\n\nWhile routing, silent playback keeps the headset call path active. This never records audio, but uses battery and can reduce media quality. The notification offers Stop, Add 5 minutes and Reapply headset.</string>
     <string name="grant_permissions">Grant Bluetooth / notification permissions</string>
     <string name="refresh">Refresh devices and route status</string>
     <string name="stop">Stop routing</string>
