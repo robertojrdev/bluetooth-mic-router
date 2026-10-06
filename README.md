@@ -9,16 +9,27 @@ routing, stored preferences, and all third-party runtime dependencies are remove
 ## Use
 
 1. Connect a call-capable Bluetooth headset in Android settings.
-2. Open BTMicFix Local and grant Nearby devices and notification permissions.
+2. Stop routing in any other BTMicFix version. Open BTMicFix Keepalive and grant Nearby devices and notification permissions.
 3. Tap the headset route button; check the actual system communication device shown.
 4. Open ChatGPT and test the microphone with the phone several metres away.
 5. Stop routing in the app or its notification, then compare.
 
 A successful setCommunicationDevice request does not prove that another application
 records from that microphone. Android or another audio-mode owner can override the
-route. The application never records or plays audio to keep a route alive. Samsung /
+route. Version 0.3.0 loops an all-zero, one-second AudioTrack buffer with voice communication
+usage while routing is enabled. This is intended to keep this UID eligible for
+communication-mode ownership on Android 16, which otherwise expires after an
+inactivity grace period. The original upstream Test button has no timer; it only
+sets communication mode and requests a route. The short-lived success reported on
+the S23 fits Android's inactivity check, but has not been confirmed with device logs.
+There is no recording, file access, microphone permission, audio-focus request or
+repeated mode-setting timer. Playback ends and the track is released on Stop, headset
+disconnect, service destruction or route failure. Samsung /
 ChatGPT compatibility must be tested on the actual phone. SCO/HFP can reduce media
-quality and use additional headset battery while enabled.
+quality and use additional headset battery while enabled. Silent keepalive also uses phone audio processing; stop it
+after testing. If ChatGPT overrides the route, the immutable notification action
+"Reapply headset" lets you submit a new route request during the voice session. This
+is a user action and does not automatically compete with calls or other applications.
 
 Routing is manual. The private foreground service remains running while requested,
 uses callbacks rather than polling, stops on disconnect/Stop, and does not restart

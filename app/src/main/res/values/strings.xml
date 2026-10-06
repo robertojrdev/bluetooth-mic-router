@@ -1,7 +1,7 @@
 <!-- Locally hardened: removed unused privileged/automatic-routing strings. -->
 <resources>
-    <string name="app_name">BTMicFix Local</string>
-    <string name="instructions">Connect your headset in Android Bluetooth settings. Tap its route button below, then open ChatGPT and test with the phone several metres away.\n\nAndroid and ChatGPT can override this request. Compare the headset microphone with routing on and off. Stop routing after testing; headset call mode can reduce playback quality.</string>
+    <string name="app_name">BTMicFix Keepalive</string>
+    <string name="instructions">Connect your headset in Android Bluetooth settings. Tap its route button below, then open ChatGPT and test with the phone several metres away.\n\nWhile enabled, this version loops silent communication playback to keep the route request active. It never records audio. This uses phone and headset battery and can reduce media quality.\n\nIf ChatGPT changes the route, try Reapply headset in the notification during your voice session. Android and ChatGPT can still override this request. Stop routing after testing.</string>
     <string name="grant_permissions">Grant Bluetooth / notification permissions</string>
     <string name="refresh">Refresh devices and route status</string>
     <string name="stop">Stop routing</string>
